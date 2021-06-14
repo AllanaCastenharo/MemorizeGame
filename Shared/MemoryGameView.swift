@@ -12,30 +12,47 @@ struct MemoryGameView: View {
     
     var body: some View {
         HStack {
-             ForEach(viewModel.cards) { card in
+            ForEach(viewModel.cards) { card in
                 CardView(card: card).onTapGesture(perform: { viewModel.choose(card: card)})
             }
         }
         .foregroundColor(.blue)
         .padding()
-        .font(Font.largeTitle)
     }
 }
 
 struct CardView: View {
     var card: MemoryGameModel<String>.Card
     var body: some View {
-        if card.isFaceUp {
-            ZStack(content: {
-                RoundedRectangle(cornerRadius: 10.0).fill(Color.white)
-                RoundedRectangle(cornerRadius: 10.0).stroke(lineWidth: 3.0)
-                Text(card.content)
-            })
-        } else {
-            ZStack(content: {
-                RoundedRectangle(cornerRadius: 10.0).fill(Color.blue)
-            })
+        GeometryReader { geometry in
+            self.body(for: geometry.size)
         }
+    }
+    
+    
+    
+    func body(for size: CGSize) -> some View {
+        ZStack {
+            if card.isFaceUp {
+                RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
+                RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edigeLineWidth)
+                Text(card.content)
+            }else{
+                RoundedRectangle(cornerRadius: 10.0).fill(Color.blue)
+            }
+        }
+        
+        .font(Font.system(size: fontSize(for: size)))
+        
+    }
+    
+    // MARK: - Constantes
+
+    let cornerRadius: CGFloat =  10.0
+    let edigeLineWidth: CGFloat = 3
+
+    func fontSize(for size: CGSize) -> CGFloat {
+        min(size.width, size.height) * 0.75
     }
 }
 
